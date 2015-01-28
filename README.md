@@ -10,8 +10,8 @@ events for suspicious or illegitimate traffic.
 
 * [Overview](#overview)
 * [Installation](#installation)
-* [Example](#example)
-* [Notice](#notice)
+* [Example](#example-use)
+* [License](#license)
 
 ## Overview
 
@@ -136,7 +136,7 @@ if (!illegitimateTraffic) {
 }
 ```
 
-## Notice
+## License
 
 Use at your own risk! The code has been modified from the original snippet
 provided and distributed by Google under the Apache License.

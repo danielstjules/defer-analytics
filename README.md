@@ -48,7 +48,7 @@ ga.js. This, however, is not currently possible with the new analytics.js librar
 ``` javascript
 // Try to load analytics.js after 5 seconds
 setTimeout(function() {
-  function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
@@ -114,7 +114,7 @@ One day you find your reports polluted with a segment of daily visitors with
 botnet! And while your site can handle the increase in traffic, your conversion
 rates plummet. You lose insight into your visitor behavior. Your ad retargeting
 budget is wasted on infected machines. And the GA filters aren't sufficiently
-flexible to remote the noise. What can you do?
+flexible to remove the noise. What can you do?
 
 You could delay or avoid loading Google Analytics for those visitors when
 you detect them. So now you have a bunch of custom `ga('send', ...)` calls
@@ -131,10 +131,41 @@ a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-XXXX-Y', 'auto');
 ga('send', 'pageview');
 
-if (!illegitimateTraffic) {
+if (legitimateTraffic) {
   initAnalytics();
 }
 ```
+
+Its effectiveness will depend on your ability to isolate the segment based
+on different patterns and properties. You also may not want to be so
+aggressive in ignoring the segment. An example alternative:
+
+```javascript
+var initializeOnce = function() {
+  initAnalytics();
+
+  if (window.removeEventListener) {
+    window.removeEventListener('mousemove', initializeOnce, false);
+  } else {
+    window.detachEvent('onmousemove', initializeOnce);
+  }
+};
+
+if (legitimateTraffic) {
+  initAnalytics();
+} else {
+  // Require a mouse movement if a suspected bot
+  if (window.addEventListener) {
+    window.addEventListener('mousemove', initializeOnce, false);
+  } else {
+    window.attachEvent('onmousemove', initializeOnce);
+  }
+}
+```
+
+Of course, it's possible this will only get you so far. You may eventually
+find yourself needing to export and process the data for analysis, or even
+opt for more reliable analytics with server-side authentication.
 
 ## License
 
